@@ -118,23 +118,23 @@ typedef struct MyAVPacketList {
 
 typedef struct PacketQueue {
     MyAVPacketList *first_pkt, *last_pkt;
-    int nb_packets;
-    int size;
-    int64_t duration;
+    int nb_packets;//包的数量
+    int size; //整个队列占用的内存
+    int64_t duration;//队列中数据播放时长之和
     int abort_request;
-    int serial;//初始化为0，后面累加
+    int serial;//初始化为0，加入刷新包加1，刷新包序号设置为1
     SDL_mutex *mutex;
     SDL_cond *cond;
 } PacketQueue;
 
-#define VIDEO_PICTURE_QUEUE_SIZE 3
-#define SUBPICTURE_QUEUE_SIZE 16
-#define SAMPLE_QUEUE_SIZE 9
+#define VIDEO_PICTURE_QUEUE_SIZE 3 //视频
+#define SUBPICTURE_QUEUE_SIZE 16  //字幕
+#define SAMPLE_QUEUE_SIZE 9    //音频
 #define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 typedef struct AudioParams {
     int freq;
-    int channels;
+    int channels;//通道数
     int64_t channel_layout;
     enum AVSampleFormat fmt;
     int frame_size;
@@ -168,16 +168,16 @@ typedef struct Frame {
 } Frame;
 
 typedef struct FrameQueue {
-    Frame queue[FRAME_QUEUE_SIZE];
-    int rindex;
-    int windex;
-    int size;
+    Frame queue[FRAME_QUEUE_SIZE];//数组来实现队列
+    int rindex;//读索引
+    int windex;//写索引
+    int size; 
     int max_size;
-    int keep_last;
-    int rindex_shown;
+    int keep_last;//是否保存最后的，音频和视频都需要
+    int rindex_shown;//读索引 显示
     SDL_mutex *mutex;
     SDL_cond *cond;
-    PacketQueue *pktq;
+    PacketQueue *pktq;//对应存放编码数据的队列
 } FrameQueue;
 
 enum {
@@ -304,7 +304,7 @@ typedef struct VideoState {
 
     int last_video_stream, last_audio_stream, last_subtitle_stream;
 
-    SDL_cond *continue_read_thread;
+    SDL_cond *continue_read_thread;//生产者：读数据一个线程，消费者：音频、视频、字幕解码分别一个线程，解码线程读取不到数据时需要等待
 } VideoState;
 
 /* options specified by the user */
@@ -362,7 +362,7 @@ static int is_full_screen;
 static int64_t audio_callback_time;
 
 static AVPacket flush_pkt;
-
+.
 #define FF_QUIT_EVENT    (SDL_USEREVENT + 2)
 
 static SDL_Window *window;
@@ -432,28 +432,28 @@ static int packet_queue_put_private(PacketQueue *q, AVPacket *pkt)
     if (q->abort_request)
        return -1;
 
-    pkt1 = av_malloc(sizeof(MyAVPacketList));
+    pkt1 = av_malloc(sizeof(MyAVPacketList));//重新分配了内存
     if (!pkt1)
         return -1;
-    pkt1->pkt = *pkt;
+    pkt1->pkt = *pkt;//
     pkt1->next = NULL;
     if (pkt == &flush_pkt)
-        q->serial++;
-    pkt1->serial = q->serial;
+        q->serial++;//刷新包为serial为0，serial加1 ，只有这里修改了serial，后续一致为1
+    pkt1->serial = q->serial;//设置序号
 
-    if (!q->last_pkt)
+    if (!q->last_pkt)//如果为null，保存队列头指针
         q->first_pkt = pkt1;
     else
-        q->last_pkt->next = pkt1;
-    q->last_pkt = pkt1;
-    q->nb_packets++;
-    q->size += pkt1->pkt.size + sizeof(*pkt1);
-    q->duration += pkt1->pkt.duration;
+        q->last_pkt->next = pkt1;//加到队尾
+    q->last_pkt = pkt1;//修改队尾指针
+    q->nb_packets++;//包数目加1
+    q->size += pkt1->pkt.size + sizeof(*pkt1);//统计队列内存
+    q->duration += pkt1->pkt.duration;//累加时长
     /* XXX: should duplicate packet data in DV case */
     SDL_CondSignal(q->cond);
     return 0;
 }
-
+//包入队列
 static int packet_queue_put(PacketQueue *q, AVPacket *pkt)
 {
     int ret;
@@ -467,10 +467,10 @@ static int packet_queue_put(PacketQueue *q, AVPacket *pkt)
 
     return ret;
 }
-
+//空数据的包入队列
 static int packet_queue_put_nullpacket(PacketQueue *q, int stream_index)
 {
-    AVPacket pkt1, *pkt = &pkt1;
+    AVPacket pkt1, *pkt = &pkt1;//栈上面分配的，不能传递给其他线程
     av_init_packet(pkt);
     pkt->data = NULL;
     pkt->size = 0;
@@ -479,7 +479,7 @@ static int packet_queue_put_nullpacket(PacketQueue *q, int stream_index)
 }
 
 /* packet queue handling */
-static int packet_queue_init(PacketQueue *q)
+static int packet_queue_init(PacketQueue *q)//初始化
 {
     memset(q, 0, sizeof(PacketQueue));
     q->mutex = SDL_CreateMutex();
@@ -496,7 +496,7 @@ static int packet_queue_init(PacketQueue *q)
     return 0;
 }
 
-static void packet_queue_flush(PacketQueue *q)
+static void packet_queue_flush(PacketQueue *q)//清空缓存
 {
     MyAVPacketList *pkt, *pkt1;
 
@@ -514,14 +514,14 @@ static void packet_queue_flush(PacketQueue *q)
     SDL_UnlockMutex(q->mutex);
 }
 
-static void packet_queue_destroy(PacketQueue *q)
+static void packet_queue_destroy(PacketQueue *q)//销毁
 {
     packet_queue_flush(q);
     SDL_DestroyMutex(q->mutex);
     SDL_DestroyCond(q->cond);
 }
 
-static void packet_queue_abort(PacketQueue *q)
+static void packet_queue_abort(PacketQueue *q)//中断
 {
     SDL_LockMutex(q->mutex);
 
@@ -532,16 +532,16 @@ static void packet_queue_abort(PacketQueue *q)
     SDL_UnlockMutex(q->mutex);
 }
 
-static void packet_queue_start(PacketQueue *q)
+static void packet_queue_start(PacketQueue *q)//开始
 {
     SDL_LockMutex(q->mutex);
     q->abort_request = 0;
-    packet_queue_put_private(q, &flush_pkt);
+    packet_queue_put_private(q, &flush_pkt);//刷新的包，data为NULL
     SDL_UnlockMutex(q->mutex);
 }
 
-/* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
-static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *serial)
+/* return < 0 if aborted, 0 if no packet and > 0 if packet.  *///取队列中数据
+static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *serial)//serial是解码器结构体的pkt_serial
 {
     MyAVPacketList *pkt1;
     int ret;
@@ -555,23 +555,23 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *seria
         }
 
         pkt1 = q->first_pkt;
-        if (pkt1) {
+        if (pkt1) {//取到数据
             q->first_pkt = pkt1->next;
             if (!q->first_pkt)
                 q->last_pkt = NULL;
             q->nb_packets--;
-            q->size -= pkt1->pkt.size + sizeof(*pkt1);
-            q->duration -= pkt1->pkt.duration;
+            q->size -= pkt1->pkt.size + sizeof(*pkt1);//修改总容量
+            q->duration -= pkt1->pkt.duration;//修改总时长
             *pkt = pkt1->pkt;
-            if (serial)
+            if (serial)//非0，设置成包的序号
                 *serial = pkt1->serial;
             av_free(pkt1);
             ret = 1;
-            break;
-        } else if (!block) {
+            break;//取到数据，中断循环
+        } else if (!block) {//block = 0;不阻塞，
             ret = 0;
             break;
-        } else {
+        } else {//block = 1;阻塞，等待队列有数据
             SDL_CondWait(q->cond, q->mutex);
         }
     }
@@ -585,7 +585,7 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
     d->queue = queue;
     d->empty_queue_cond = empty_queue_cond;
     d->start_pts = AV_NOPTS_VALUE;
-    d->pkt_serial = -1;
+    d->pkt_serial = -1;//初始化为-1
 }
 
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
@@ -616,7 +616,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                     case AVMEDIA_TYPE_AUDIO:
                         ret = avcodec_receive_frame(d->avctx, frame);
                         if (ret >= 0) {
-                            AVRational tb = (AVRational){1, frame->sample_rate};
+                            AVRational tb = (AVRational){1, frame->sample_rate};//时间基
                             if (frame->pts != AV_NOPTS_VALUE)
                                 frame->pts = av_rescale_q(frame->pts, d->avctx->pkt_timebase, tb);
                             else if (d->next_pts != AV_NOPTS_VALUE)
@@ -674,7 +674,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                 if (avcodec_send_packet(d->avctx, &pkt) == AVERROR(EAGAIN)) {
                     av_log(d->avctx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
                     d->packet_pending = 1;
-                    av_packet_move_ref(&d->pkt, &pkt);
+                    av_packet_move_ref(&d->pkt, &pkt);//送入解码器包缓存到Decoder中，
                 }
             }
             av_packet_unref(&pkt);
@@ -709,7 +709,7 @@ static int frame_queue_init(FrameQueue *f, PacketQueue *pktq, int max_size, int 
     f->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
     f->keep_last = !!keep_last;
     for (i = 0; i < f->max_size; i++)
-        if (!(f->queue[i].frame = av_frame_alloc()))
+        if (!(f->queue[i].frame = av_frame_alloc()))//堆上分配max_size的AVFrame，数组形式
             return AVERROR(ENOMEM);
     return 0;
 }
@@ -738,7 +738,7 @@ static Frame *frame_queue_peek(FrameQueue *f)//获取当前显示的
     return &f->queue[(f->rindex + f->rindex_shown) % f->max_size];
 }
 
-static Frame *frame_queue_peek_next(FrameQueue *f)
+static Frame *frame_queue_peek_next(FrameQueue *f)//获取下一帧
 {
     return &f->queue[(f->rindex + f->rindex_shown + 1) % f->max_size];
 }
@@ -750,9 +750,9 @@ static Frame *frame_queue_peek_last(FrameQueue *f)//获取上一次显示的
 
 static Frame *frame_queue_peek_writable(FrameQueue *f)
 {
-    /* wait until we have space to put a new frame */
+    /* wait until we have space to put a new frame *///播放那边取队列中的frame，解码输出的数据放入队列可能需要等待
     SDL_LockMutex(f->mutex);
-    while (f->size >= f->max_size &&
+    while (f->size >= f->max_size &&//队列放满的时候需要等待
            !f->pktq->abort_request) {
         SDL_CondWait(f->cond, f->mutex);
     }
@@ -761,14 +761,14 @@ static Frame *frame_queue_peek_writable(FrameQueue *f)
     if (f->pktq->abort_request)
         return NULL;
 
-    return &f->queue[f->windex];
+    return &f->queue[f->windex];//可写位置的索引
 }
 
 static Frame *frame_queue_peek_readable(FrameQueue *f)
 {
     /* wait until we have a readable a new frame */
     SDL_LockMutex(f->mutex);
-    while (f->size - f->rindex_shown <= 0 &&
+    while (f->size - f->rindex_shown <= 0 &&//rindex_shown初始值为0，为0时：只要有帧就可以返回，为1时：size必须大于等于2才返回
            !f->pktq->abort_request) {
         SDL_CondWait(f->cond, f->mutex);
     }
@@ -781,7 +781,7 @@ static Frame *frame_queue_peek_readable(FrameQueue *f)
 }
 
 static void frame_queue_push(FrameQueue *f)//只有size加了之后，读取地方才能取到
-{
+{//frame_queue_peek_writable执行完先写入数据，写完后再调用这个更好写的索引
     if (++f->windex == f->max_size)
         f->windex = 0;
     SDL_LockMutex(f->mutex);
@@ -790,10 +790,10 @@ static void frame_queue_push(FrameQueue *f)//只有size加了之后，读取地方才能取到
     SDL_UnlockMutex(f->mutex);
 }
 
-static void frame_queue_next(FrameQueue *f)//队列移除一个
-{
+static void frame_queue_next(FrameQueue *f)
+{//队列移除一个，满足保留上一次播放的和rindex_shown为0，则设置rindex_shown为1后直接返回
     if (f->keep_last && !f->rindex_shown) {
-        f->rindex_shown = 1;
+        f->rindex_shown = 1;//只有这里赋值
         return;
     }
     frame_queue_unref_item(&f->queue[f->rindex]);
@@ -806,16 +806,16 @@ static void frame_queue_next(FrameQueue *f)//队列移除一个
 }
 
 /* return the number of undisplayed frames in the queue */
-static int frame_queue_nb_remaining(FrameQueue *f)
+static int frame_queue_nb_remaining(FrameQueue *f)//返回没有显示的帧数目
 {
     return f->size - f->rindex_shown;
 }
 
 /* return last shown position */
-static int64_t frame_queue_last_pos(FrameQueue *f)
+static int64_t frame_queue_last_pos(FrameQueue *f)//返回上一次显示的位置文件中的位置
 {
     Frame *fp = &f->queue[f->rindex];
-    if (f->rindex_shown && fp->serial == f->pktq->serial)
+    if (f->rindex_shown && fp->serial == f->pktq->serial//rindex_shown为0，说明还没有显示过
         return fp->pos;
     else
         return -1;
@@ -2072,7 +2072,7 @@ static int audio_thread(void *arg)
         if ((got_frame = decoder_decode_frame(&is->auddec, frame, NULL)) < 0)
             goto the_end;
 
-        if (got_frame) {
+        if (got_frame) {//=1说明获取到了解码后的数据
                 tb = (AVRational){1, frame->sample_rate};
 
 #if CONFIG_AVFILTER
@@ -2806,7 +2806,7 @@ static int read_thread(void *arg)
         ret = AVERROR(ENOMEM);
         goto fail;
     }
-    ic->interrupt_callback.callback = decode_interrupt_cb;
+    ic->interrupt_callback.callback = decode_interrupt_cb;//解码中断回调
     ic->interrupt_callback.opaque = is;
     if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
         av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
@@ -3130,7 +3130,7 @@ static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
         goto fail;
     }
-
+    //初始化时钟
     init_clock(&is->vidclk, &is->videoq.serial);
     init_clock(&is->audclk, &is->audioq.serial);
     init_clock(&is->extclk, &is->extclk.serial);

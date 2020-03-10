@@ -584,7 +584,7 @@ void av_frame_move_ref(AVFrame *dst, AVFrame *src)
     av_assert1(dst->width == 0 && dst->height == 0);
     av_assert1(dst->channels == 0);
 
-    *dst = *src;
+    *dst = *src;//所有src成员值都设置到dst中
     if (src->extended_data == src->data)
         dst->extended_data = dst->data;
     memset(src, 0, sizeof(*src));
