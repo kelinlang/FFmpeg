@@ -815,7 +815,7 @@ static int frame_queue_nb_remaining(FrameQueue *f)//返回没有显示的帧数目
 static int64_t frame_queue_last_pos(FrameQueue *f)//返回上一次显示的位置文件中的位置
 {
     Frame *fp = &f->queue[f->rindex];
-    if (f->rindex_shown && fp->serial == f->pktq->serial//rindex_shown为0，说明还没有显示过
+    if (f->rindex_shown && fp->serial == f->pktq->serial)//rindex_shown为0，说明还没有显示过
         return fp->pos;
     else
         return -1;
