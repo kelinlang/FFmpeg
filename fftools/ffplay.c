@@ -118,23 +118,23 @@ typedef struct MyAVPacketList {
 
 typedef struct PacketQueue {
     MyAVPacketList *first_pkt, *last_pkt;
-    int nb_packets;//°üµÄÊýÁ¿
-    int size; //Õû¸ö¶ÓÁÐÕ¼ÓÃµÄÄÚ´æ
-    int64_t duration;//¶ÓÁÐÖÐÊý¾Ý²¥·ÅÊ±³¤Ö®ºÍ
+    int nb_packets;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    int size; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Ãµï¿½ï¿½Ú´ï¿½
+    int64_t duration;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý²ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ö®ï¿½ï¿½
     int abort_request;
-    int serial;//³õÊ¼»¯Îª0£¬¼ÓÈëË¢ÐÂ°ü¼Ó1£¬Ë¢ÐÂ°üÐòºÅÉèÖÃÎª1
+    int serial;//ï¿½ï¿½Ê¼ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¢ï¿½Â°ï¿½ï¿½ï¿½1ï¿½ï¿½Ë¢ï¿½Â°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª1
     SDL_mutex *mutex;
     SDL_cond *cond;
 } PacketQueue;
 
-#define VIDEO_PICTURE_QUEUE_SIZE 3 //ÊÓÆµ
-#define SUBPICTURE_QUEUE_SIZE 16  //×ÖÄ»
-#define SAMPLE_QUEUE_SIZE 9    //ÒôÆµ
+#define VIDEO_PICTURE_QUEUE_SIZE 3 //ï¿½ï¿½Æµ
+#define SUBPICTURE_QUEUE_SIZE 16  //ï¿½ï¿½Ä»
+#define SAMPLE_QUEUE_SIZE 9    //ï¿½ï¿½Æµ
 #define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 typedef struct AudioParams {
     int freq;
-    int channels;//Í¨µÀÊý
+    int channels;//Í¨ï¿½ï¿½ï¿½ï¿½
     int64_t channel_layout;
     enum AVSampleFormat fmt;
     int frame_size;
@@ -142,9 +142,9 @@ typedef struct AudioParams {
 } AudioParams;
 
 typedef struct Clock {
-    double pts;           /* clock base */ //Ê±¼ä»ù×¼
-    double pts_drift;     /* clock base minus time at which we updated the clock *///Ê±¼ä»ù¼õÈ¥¸üÐÂÊ±ÖÓµÄÊ±¼ä 
-    double last_updated;//Ö´ÐÐset_clock_atº¯ÊýÊ±»ñÈ¡µÄÊ±¼ä´Á
+    double pts;           /* clock base */ //Ê±ï¿½ï¿½ï¿½×¼
+    double pts_drift;     /* clock base minus time at which we updated the clock *///Ê±ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Óµï¿½Ê±ï¿½ï¿½ 
+    double last_updated;//Ö´ï¿½ï¿½set_clock_atï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½È¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
     double speed;
     int serial;           /* clock is based on a packet with this serial */
     int paused;
@@ -168,16 +168,16 @@ typedef struct Frame {
 } Frame;
 
 typedef struct FrameQueue {
-    Frame queue[FRAME_QUEUE_SIZE];//Êý×éÀ´ÊµÏÖ¶ÓÁÐ
-    int rindex;//¶ÁË÷Òý
-    int windex;//Ð´Ë÷Òý
+    Frame queue[FRAME_QUEUE_SIZE];//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½Ö¶ï¿½ï¿½ï¿½
+    int rindex;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    int windex;//Ð´ï¿½ï¿½ï¿½ï¿½
     int size; 
     int max_size;
-    int keep_last;//ÊÇ·ñ±£´æ×îºóµÄ£¬ÒôÆµºÍÊÓÆµ¶¼ÐèÒª
-    int rindex_shown;//¶ÁË÷Òý ÏÔÊ¾
+    int keep_last;//ï¿½Ç·ñ±£´ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Òª
+    int rindex_shown;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ê¾
     SDL_mutex *mutex;
     SDL_cond *cond;
-    PacketQueue *pktq;//¶ÔÓ¦´æ·Å±àÂëÊý¾ÝµÄ¶ÓÁÐ
+    PacketQueue *pktq;//ï¿½ï¿½Ó¦ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ¶ï¿½ï¿½ï¿½
 } FrameQueue;
 
 enum {
@@ -215,7 +215,7 @@ typedef struct VideoState {
     int64_t seek_rel;
     int read_pause_return;
     AVFormatContext *ic;
-    int realtime;//rtps rtp rtmpÊÇÊµÊ±ÊÓÆµ
+    int realtime;//rtps rtp rtmpï¿½ï¿½ÊµÊ±ï¿½ï¿½Æµ
 
     Clock audclk;
     Clock vidclk;
@@ -234,7 +234,7 @@ typedef struct VideoState {
     int av_sync_type;
 
     double audio_clock;
-    int audio_clock_serial;//³õÊ¼»¯Ê±ÖÓºóÉèÖÃÎªÁË-1
+    int audio_clock_serial;//ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½Óºï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½-1
     double audio_diff_cum; /* used for AV difference average computation */
     double audio_diff_avg_coef;
     double audio_diff_threshold;
@@ -269,7 +269,7 @@ typedef struct VideoState {
     int rdft_bits;
     FFTSample *rdft_data;
     int xpos;
-    double last_vis_time;//ÉÏÒ»´ÎÏÔÊ¾µÄÊ±¼ä
+    double last_vis_time;//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê±ï¿½ï¿½
     SDL_Texture *vis_texture;
     SDL_Texture *sub_texture;
     SDL_Texture *vid_texture;
@@ -304,7 +304,7 @@ typedef struct VideoState {
 
     int last_video_stream, last_audio_stream, last_subtitle_stream;
 
-    SDL_cond *continue_read_thread;//Éú²úÕß£º¶ÁÊý¾ÝÒ»¸öÏß³Ì£¬Ïû·ÑÕß£ºÒôÆµ¡¢ÊÓÆµ¡¢×ÖÄ»½âÂë·Ö±ðÒ»¸öÏß³Ì£¬½âÂëÏß³Ì¶ÁÈ¡²»µ½Êý¾ÝÊ±ÐèÒªµÈ´ý
+    SDL_cond *continue_read_thread;//ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ß³Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ò»ï¿½ï¿½ï¿½ß³Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³Ì¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Òªï¿½È´ï¿½
 } VideoState;
 
 /* options specified by the user */
@@ -432,28 +432,28 @@ static int packet_queue_put_private(PacketQueue *q, AVPacket *pkt)
     if (q->abort_request)
        return -1;
 
-    pkt1 = av_malloc(sizeof(MyAVPacketList));//ÖØÐÂ·ÖÅäÁËÄÚ´æ
+    pkt1 = av_malloc(sizeof(MyAVPacketList));//ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
     if (!pkt1)
         return -1;
     pkt1->pkt = *pkt;//
     pkt1->next = NULL;
     if (pkt == &flush_pkt)
-        q->serial++;//Ë¢ÐÂ°üÎªserialÎª0£¬serial¼Ó1 £¬Ö»ÓÐÕâÀïÐÞ¸ÄÁËserial£¬ºóÐøÒ»ÖÂÎª1
-    pkt1->serial = q->serial;//ÉèÖÃÐòºÅ
+        q->serial++;//Ë¢ï¿½Â°ï¿½ÎªserialÎª0ï¿½ï¿½serialï¿½ï¿½1 ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½serialï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Îª1
+    pkt1->serial = q->serial;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    if (!q->last_pkt)//Èç¹ûÎªnull£¬±£´æ¶ÓÁÐÍ·Ö¸Õë
+    if (!q->last_pkt)//ï¿½ï¿½ï¿½Îªnullï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·Ö¸ï¿½ï¿½
         q->first_pkt = pkt1;
     else
-        q->last_pkt->next = pkt1;//¼Óµ½¶ÓÎ²
-    q->last_pkt = pkt1;//ÐÞ¸Ä¶ÓÎ²Ö¸Õë
-    q->nb_packets++;//°üÊýÄ¿¼Ó1
-    q->size += pkt1->pkt.size + sizeof(*pkt1);//Í³¼Æ¶ÓÁÐÄÚ´æ
-    q->duration += pkt1->pkt.duration;//ÀÛ¼ÓÊ±³¤
+        q->last_pkt->next = pkt1;//ï¿½Óµï¿½ï¿½ï¿½Î²
+    q->last_pkt = pkt1;//ï¿½Þ¸Ä¶ï¿½Î²Ö¸ï¿½ï¿½
+    q->nb_packets++;//ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½1
+    q->size += pkt1->pkt.size + sizeof(*pkt1);//Í³ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
+    q->duration += pkt1->pkt.duration;//ï¿½Û¼ï¿½Ê±ï¿½ï¿½
     /* XXX: should duplicate packet data in DV case */
     SDL_CondSignal(q->cond);
     return 0;
 }
-//°üÈë¶ÓÁÐ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 static int packet_queue_put(PacketQueue *q, AVPacket *pkt)
 {
     int ret;
@@ -467,10 +467,10 @@ static int packet_queue_put(PacketQueue *q, AVPacket *pkt)
 
     return ret;
 }
-//¿ÕÊý¾ÝµÄ°üÈë¶ÓÁÐ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 static int packet_queue_put_nullpacket(PacketQueue *q, int stream_index)
 {
-    AVPacket pkt1, *pkt = &pkt1;//Õ»ÉÏÃæ·ÖÅäµÄ£¬²»ÄÜ´«µÝ¸øÆäËûÏß³Ì
+    AVPacket pkt1, *pkt = &pkt1;//Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ü´ï¿½ï¿½Ý¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
     av_init_packet(pkt);
     pkt->data = NULL;
     pkt->size = 0;
@@ -479,7 +479,7 @@ static int packet_queue_put_nullpacket(PacketQueue *q, int stream_index)
 }
 
 /* packet queue handling */
-static int packet_queue_init(PacketQueue *q)//³õÊ¼»¯
+static int packet_queue_init(PacketQueue *q)//ï¿½ï¿½Ê¼ï¿½ï¿½
 {
     memset(q, 0, sizeof(PacketQueue));
     q->mutex = SDL_CreateMutex();
@@ -496,7 +496,7 @@ static int packet_queue_init(PacketQueue *q)//³õÊ¼»¯
     return 0;
 }
 
-static void packet_queue_flush(PacketQueue *q)//Çå¿Õ»º´æ
+static void packet_queue_flush(PacketQueue *q)//ï¿½ï¿½Õ»ï¿½ï¿½ï¿½
 {
     MyAVPacketList *pkt, *pkt1;
 
@@ -514,14 +514,14 @@ static void packet_queue_flush(PacketQueue *q)//Çå¿Õ»º´æ
     SDL_UnlockMutex(q->mutex);
 }
 
-static void packet_queue_destroy(PacketQueue *q)//Ïú»Ù
+static void packet_queue_destroy(PacketQueue *q)//ï¿½ï¿½ï¿½ï¿½
 {
     packet_queue_flush(q);
     SDL_DestroyMutex(q->mutex);
     SDL_DestroyCond(q->cond);
 }
 
-static void packet_queue_abort(PacketQueue *q)//ÖÐ¶Ï
+static void packet_queue_abort(PacketQueue *q)//ï¿½Ð¶ï¿½
 {
     SDL_LockMutex(q->mutex);
 
@@ -532,16 +532,16 @@ static void packet_queue_abort(PacketQueue *q)//ÖÐ¶Ï
     SDL_UnlockMutex(q->mutex);
 }
 
-static void packet_queue_start(PacketQueue *q)//¿ªÊ¼
+static void packet_queue_start(PacketQueue *q)//ï¿½ï¿½Ê¼
 {
     SDL_LockMutex(q->mutex);
     q->abort_request = 0;
-    packet_queue_put_private(q, &flush_pkt);//Ë¢ÐÂµÄ°ü£¬dataÎªNULL
+    packet_queue_put_private(q, &flush_pkt);//Ë¢ï¿½ÂµÄ°ï¿½ï¿½ï¿½dataÎªNULL
     SDL_UnlockMutex(q->mutex);
 }
 
-/* return < 0 if aborted, 0 if no packet and > 0 if packet.  *///È¡¶ÓÁÐÖÐÊý¾Ý
-static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *serial)//serialÊÇ½âÂëÆ÷½á¹¹ÌåµÄpkt_serial
+/* return < 0 if aborted, 0 if no packet and > 0 if packet.  *///È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *serial)//serialï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½pkt_serial
 {
     MyAVPacketList *pkt1;
     int ret;
@@ -555,23 +555,23 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *seria
         }
 
         pkt1 = q->first_pkt;
-        if (pkt1) {//È¡µ½Êý¾Ý
+        if (pkt1) {//È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             q->first_pkt = pkt1->next;
             if (!q->first_pkt)
                 q->last_pkt = NULL;
             q->nb_packets--;
-            q->size -= pkt1->pkt.size + sizeof(*pkt1);//ÐÞ¸Ä×ÜÈÝÁ¿
-            q->duration -= pkt1->pkt.duration;//ÐÞ¸Ä×ÜÊ±³¤
+            q->size -= pkt1->pkt.size + sizeof(*pkt1);//ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            q->duration -= pkt1->pkt.duration;//ï¿½Þ¸ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
             *pkt = pkt1->pkt;
-            if (serial)//·Ç0£¬ÉèÖÃ³É°üµÄÐòºÅ
+            if (serial)//ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½Ã³É°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 *serial = pkt1->serial;
             av_free(pkt1);
             ret = 1;
-            break;//È¡µ½Êý¾Ý£¬ÖÐ¶ÏÑ­»·
-        } else if (!block) {//block = 0;²»×èÈû£¬
+            break;//È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Ð¶ï¿½Ñ­ï¿½ï¿½
+        } else if (!block) {//block = 0;ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             ret = 0;
             break;
-        } else {//block = 1;×èÈû£¬µÈ´ý¶ÓÁÐÓÐÊý¾Ý
+        } else {//block = 1;ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             SDL_CondWait(q->cond, q->mutex);
         }
     }
@@ -585,7 +585,7 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
     d->queue = queue;
     d->empty_queue_cond = empty_queue_cond;
     d->start_pts = AV_NOPTS_VALUE;
-    d->pkt_serial = -1;//³õÊ¼»¯Îª-1
+    d->pkt_serial = -1;//ï¿½ï¿½Ê¼ï¿½ï¿½Îª-1
 }
 
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
@@ -601,7 +601,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
 
                 switch (d->avctx->codec_type) {
                     case AVMEDIA_TYPE_VIDEO:
-                        ret = avcodec_receive_frame(d->avctx, frame);//»ñÈ¡½âÂëºóµÄÊý¾Ý£¬½âÂëÊ±¼ä´ÁºÍÏÔÊ¾Ê±¼ä´Á
+                        ret = avcodec_receive_frame(d->avctx, frame);//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ê±ï¿½ï¿½ï¿½
                         if (ret >= 0) {
 							av_log(NULL, AV_LOG_DEBUG, "  ffplay decoder_decode_frame 001: pts:%s, dts:%s,pkt_pts:%s, pkt_dts:%s\n", av_ts2str(frame->pts), av_ts2str(frame->pts),
 								av_ts2str(frame->pkt_pts), av_ts2str(frame->pkt_dts));
@@ -609,14 +609,14 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                             if (decoder_reorder_pts == -1) {
                                 frame->pts = frame->best_effort_timestamp;
                             } else if (!decoder_reorder_pts) {
-                                frame->pts = frame->pkt_dts;//ÊÓÆµÔ´ÀïÃæ´ø¹ýÀ´µÄÏÔÊ¾Ê±¼ä´Á
+                                frame->pts = frame->pkt_dts;//ï¿½ï¿½ÆµÔ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ê±ï¿½ï¿½ï¿½
                             }
                         }
                         break;
                     case AVMEDIA_TYPE_AUDIO:
                         ret = avcodec_receive_frame(d->avctx, frame);
                         if (ret >= 0) {
-                            AVRational tb = (AVRational){1, frame->sample_rate};//Ê±¼ä»ù
+                            AVRational tb = (AVRational){1, frame->sample_rate};//Ê±ï¿½ï¿½ï¿½
                             if (frame->pts != AV_NOPTS_VALUE)
                                 frame->pts = av_rescale_q(frame->pts, d->avctx->pkt_timebase, tb);
                             else if (d->next_pts != AV_NOPTS_VALUE)
@@ -674,7 +674,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                 if (avcodec_send_packet(d->avctx, &pkt) == AVERROR(EAGAIN)) {
                     av_log(d->avctx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
                     d->packet_pending = 1;
-                    av_packet_move_ref(&d->pkt, &pkt);//ËÍÈë½âÂëÆ÷°ü»º´æµ½DecoderÖÐ£¬
+                    av_packet_move_ref(&d->pkt, &pkt);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æµ½Decoderï¿½Ð£ï¿½
                 }
             }
             av_packet_unref(&pkt);
@@ -709,7 +709,7 @@ static int frame_queue_init(FrameQueue *f, PacketQueue *pktq, int max_size, int 
     f->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
     f->keep_last = !!keep_last;
     for (i = 0; i < f->max_size; i++)
-        if (!(f->queue[i].frame = av_frame_alloc()))//¶ÑÉÏ·ÖÅämax_sizeµÄAVFrame£¬Êý×éÐÎÊ½
+        if (!(f->queue[i].frame = av_frame_alloc()))//ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½max_sizeï¿½ï¿½AVFrameï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
             return AVERROR(ENOMEM);
     return 0;
 }
@@ -733,26 +733,26 @@ static void frame_queue_signal(FrameQueue *f)
     SDL_UnlockMutex(f->mutex);
 }
 
-static Frame *frame_queue_peek(FrameQueue *f)//»ñÈ¡µ±Ç°ÏÔÊ¾µÄ
+static Frame *frame_queue_peek(FrameQueue *f)//ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Ê¾ï¿½ï¿½
 {
     return &f->queue[(f->rindex + f->rindex_shown) % f->max_size];
 }
 
-static Frame *frame_queue_peek_next(FrameQueue *f)//»ñÈ¡ÏÂÒ»Ö¡
+static Frame *frame_queue_peek_next(FrameQueue *f)//ï¿½ï¿½È¡ï¿½ï¿½Ò»Ö¡
 {
     return &f->queue[(f->rindex + f->rindex_shown + 1) % f->max_size];
 }
 
-static Frame *frame_queue_peek_last(FrameQueue *f)//»ñÈ¡ÉÏÒ»´ÎÏÔÊ¾µÄ
+static Frame *frame_queue_peek_last(FrameQueue *f)//ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½
 {
     return &f->queue[f->rindex];
 }
 
 static Frame *frame_queue_peek_writable(FrameQueue *f)
 {
-    /* wait until we have space to put a new frame *///²¥·ÅÄÇ±ßÈ¡¶ÓÁÐÖÐµÄframe£¬½âÂëÊä³öµÄÊý¾Ý·ÅÈë¶ÓÁÐ¿ÉÄÜÐèÒªµÈ´ý
+    /* wait until we have space to put a new frame *///ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½frameï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½È´ï¿½
     SDL_LockMutex(f->mutex);
-    while (f->size >= f->max_size &&//¶ÓÁÐ·ÅÂúµÄÊ±ºòÐèÒªµÈ´ý
+    while (f->size >= f->max_size &&//ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Òªï¿½È´ï¿½
            !f->pktq->abort_request) {
         SDL_CondWait(f->cond, f->mutex);
     }
@@ -761,14 +761,14 @@ static Frame *frame_queue_peek_writable(FrameQueue *f)
     if (f->pktq->abort_request)
         return NULL;
 
-    return &f->queue[f->windex];//¿ÉÐ´Î»ÖÃµÄË÷Òý
+    return &f->queue[f->windex];//ï¿½ï¿½Ð´Î»ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 static Frame *frame_queue_peek_readable(FrameQueue *f)
 {
     /* wait until we have a readable a new frame */
     SDL_LockMutex(f->mutex);
-    while (f->size - f->rindex_shown <= 0 &&//rindex_shown³õÊ¼ÖµÎª0£¬Îª0Ê±£ºÖ»ÒªÓÐÖ¡¾Í¿ÉÒÔ·µ»Ø£¬Îª1Ê±£ºsize±ØÐë´óÓÚµÈÓÚ2²Å·µ»Ø
+    while (f->size - f->rindex_shown <= 0 &&//rindex_shownï¿½ï¿½Ê¼ÖµÎª0ï¿½ï¿½Îª0Ê±ï¿½ï¿½Ö»Òªï¿½ï¿½Ö¡ï¿½Í¿ï¿½ï¿½Ô·ï¿½ï¿½Ø£ï¿½Îª1Ê±ï¿½ï¿½sizeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½2ï¿½Å·ï¿½ï¿½ï¿½
            !f->pktq->abort_request) {
         SDL_CondWait(f->cond, f->mutex);
     }
@@ -780,8 +780,8 @@ static Frame *frame_queue_peek_readable(FrameQueue *f)
     return &f->queue[(f->rindex + f->rindex_shown) % f->max_size];
 }
 
-static void frame_queue_push(FrameQueue *f)//Ö»ÓÐsize¼ÓÁËÖ®ºó£¬¶ÁÈ¡µØ·½²ÅÄÜÈ¡µ½
-{//frame_queue_peek_writableÖ´ÐÐÍêÏÈÐ´ÈëÊý¾Ý£¬Ð´ÍêºóÔÙµ÷ÓÃÕâ¸ö¸üºÃÐ´µÄË÷Òý
+static void frame_queue_push(FrameQueue *f)//Ö»ï¿½ï¿½sizeï¿½ï¿½ï¿½ï¿½Ö®ï¿½ó£¬¶ï¿½È¡ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½
+{//frame_queue_peek_writableÖ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½Ð´ï¿½ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (++f->windex == f->max_size)
         f->windex = 0;
     SDL_LockMutex(f->mutex);
@@ -791,9 +791,9 @@ static void frame_queue_push(FrameQueue *f)//Ö»ÓÐsize¼ÓÁËÖ®ºó£¬¶ÁÈ¡µØ·½²ÅÄÜÈ¡µ½
 }
 
 static void frame_queue_next(FrameQueue *f)
-{//¶ÓÁÐÒÆ³ýÒ»¸ö£¬Âú×ã±£ÁôÉÏÒ»´Î²¥·ÅµÄºÍrindex_shownÎª0£¬ÔòÉèÖÃrindex_shownÎª1ºóÖ±½Ó·µ»Ø
+{//ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã±£ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î²ï¿½ï¿½ÅµÄºï¿½rindex_shownÎª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½rindex_shownÎª1ï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½
     if (f->keep_last && !f->rindex_shown) {
-        f->rindex_shown = 1;//Ö»ÓÐÕâÀï¸³Öµ
+        f->rindex_shown = 1;//Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¸³Öµ
         return;
     }
     frame_queue_unref_item(&f->queue[f->rindex]);
@@ -806,16 +806,16 @@ static void frame_queue_next(FrameQueue *f)
 }
 
 /* return the number of undisplayed frames in the queue */
-static int frame_queue_nb_remaining(FrameQueue *f)//·µ»ØÃ»ÓÐÏÔÊ¾µÄÖ¡ÊýÄ¿
+static int frame_queue_nb_remaining(FrameQueue *f)//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ö¡ï¿½ï¿½Ä¿
 {
     return f->size - f->rindex_shown;
 }
 
 /* return last shown position */
-static int64_t frame_queue_last_pos(FrameQueue *f)//·µ»ØÉÏÒ»´ÎÏÔÊ¾µÄÎ»ÖÃÎÄ¼þÖÐµÄÎ»ÖÃ
+static int64_t frame_queue_last_pos(FrameQueue *f)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ðµï¿½Î»ï¿½ï¿½
 {
     Frame *fp = &f->queue[f->rindex];
-    if (f->rindex_shown && fp->serial == f->pktq->serial)//rindex_shownÎª0£¬ËµÃ÷»¹Ã»ÓÐÏÔÊ¾¹ý
+    if (f->rindex_shown && fp->serial == f->pktq->serial)//rindex_shownÎª0ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½
         return fp->pos;
     else
         return -1;
@@ -1376,7 +1376,7 @@ static void video_display(VideoState *is)
         video_image_display(is);
     SDL_RenderPresent(renderer);
 }
-/** »ñÈ¡µ±Ç°Ê±ÖÓ **/
+/** ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½ **/
 static double get_clock(Clock *c)
 {
     if (*c->queue_serial != c->serial)
@@ -1386,48 +1386,48 @@ static double get_clock(Clock *c)
     } else {
         double time = av_gettime_relative() / 1000000.0;
         return c->pts_drift + time - (time - c->last_updated) * (1.0 - c->speed);
-		//speed = 1Ê±£¬Ïàµ±ÓÚ·µ»Ø£ºc->pts_drift + time
-		//                                          NAN-µ±Ç°Ê±¼ä
+		//speed = 1Ê±ï¿½ï¿½ï¿½àµ±ï¿½Ú·ï¿½ï¿½Ø£ï¿½c->pts_drift + time
+		//                                          NAN-ï¿½ï¿½Ç°Ê±ï¿½ï¿½
     }
 }
-/** ÉèÖÃÊ±ÖÓ **/                           //³õÊ¼»¯Ê± prs=NAN, serial=-1
+/** ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ **/                           //ï¿½ï¿½Ê¼ï¿½ï¿½Ê± prs=NAN, serial=-1
 static void set_clock_at(Clock *c, double pts, int serial, double time)
 {
     c->pts = pts;
     c->last_updated = time;
-    c->pts_drift = c->pts - time; //³õÊ¼»¯ÉèÖÃÎª£ºNAN-µ±Ç°Ê±¼ä
+    c->pts_drift = c->pts - time; //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½NAN-ï¿½ï¿½Ç°Ê±ï¿½ï¿½
     c->serial = serial;
 }
-/** ÉèÖÃÊ±ÖÓ  ÄÚ²¿µ÷ÓÃset_clock_at()**/
+/** ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½  ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½set_clock_at()**/
 static void set_clock(Clock *c, double pts, int serial)
 {
     double time = av_gettime_relative() / 1000000.0;//
     set_clock_at(c, pts, serial, time);
 }
-/** ÉèÖÃÊ±ÖÓËÙ¶È **/
+/** ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ù¶ï¿½ **/
 static void set_clock_speed(Clock *c, double speed)
 {
     set_clock(c, get_clock(c), c->serial);
     c->speed = speed;
 }
-/** ³õÊ¼»¯Ê±ÖÓ **/
+/** ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½ **/
 static void init_clock(Clock *c, int *queue_serial)
 {
     c->speed = 1.0;
     c->paused = 0;
-    c->queue_serial = queue_serial;//³õÊ¼»¯µÄÊ±ºòÉèÖÃÎª0
+    c->queue_serial = queue_serial;//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0
     set_clock(c, NAN, -1);
 }
-/** Òô/ÊÓÆµÉèÖÃÊ±ÖÓµÄÊ±ºò¶¼»ØÈ¥¸úÍâ²¿Ê±ÖÓ½øÐÐ¶Ô±È£¬·ÀÖ¹¶ªÖ¡»òÕß¶ª°üÇé¿öÏÂÊ±¼ä²î¾à±È½Ï´ó¶ø½øÐÐµÄ¾ÀÆ« **/
+/** ï¿½ï¿½/ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Ê±ï¿½Óµï¿½Ê±ï¿½ò¶¼»ï¿½È¥ï¿½ï¿½ï¿½â²¿Ê±ï¿½Ó½ï¿½ï¿½Ð¶Ô±È£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½È½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ¾ï¿½Æ« **/
 static void sync_clock_to_slave(Clock *c, Clock *slave)
 {
     double clock = get_clock(c);
-    double slave_clock = get_clock(slave);//³õÊ¼»¯µÄÊ±ºòÉèÖÃÎªNAN
-	//Âú×ãÌõ¼þ£ºslaveÒÑ¾­·Ç³õÊ¼»¯×´Ì¬ ²¢ÇÒ£¨clockÊÇ³õÊ¼»¯×´Ì¬ »òÕß Ê±¼äÆ«²î´óÓÚ10msãÐÖµ£©
+    double slave_clock = get_clock(slave);//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªNAN
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½slaveï¿½Ñ¾ï¿½ï¿½Ç³ï¿½Ê¼ï¿½ï¿½×´Ì¬ ï¿½ï¿½ï¿½Ò£ï¿½clockï¿½Ç³ï¿½Ê¼ï¿½ï¿½×´Ì¬ ï¿½ï¿½ï¿½ï¿½ Ê±ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½10msï¿½ï¿½Öµï¿½ï¿½
     if (!isnan(slave_clock) && (isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD))
         set_clock(c, slave_clock, slave->serial);
 }
-/** »ñÈ¡×öÎª»ù×¼µÄÀàÐÍ  ÒôÆµ Íâ²¿Ê±ÖÓ ÊÓÆµ **/
+/** ï¿½ï¿½È¡ï¿½ï¿½Îªï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½Æµ ï¿½â²¿Ê±ï¿½ï¿½ ï¿½ï¿½Æµ **/
 static int get_master_sync_type(VideoState *is) {
     if (is->av_sync_type == AV_SYNC_VIDEO_MASTER) {
         if (is->video_st)
@@ -1444,7 +1444,7 @@ static int get_master_sync_type(VideoState *is) {
     }
 }
 
-/* get the current master clock value *//** »ñÈ¡Ö÷Ê±¼äÖáµÄÊ±¼ä **/
+/* get the current master clock value *//** ï¿½ï¿½È¡ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ **/
 static double get_master_clock(VideoState *is)
 {
     double val;
@@ -1462,7 +1462,7 @@ static double get_master_clock(VideoState *is)
     }
     return val;
 }
-/** ¼ì²éÍâ²¿Ê±ÖÓµÄËÙÂÊ²¢ÉèÖÃËÙÂÊ **/
+/** ï¿½ï¿½ï¿½ï¿½â²¿Ê±ï¿½Óµï¿½ï¿½ï¿½ï¿½Ê²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ **/
 static void check_external_clock_speed(VideoState *is) {
    if (is->video_stream >= 0 && is->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES ||
        is->audio_stream >= 0 && is->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) {
@@ -1531,9 +1531,9 @@ static void step_to_next_frame(VideoState *is)
     is->step = 1;
 }
 
-// ¸ù¾ÝÊÓÆµÊ±ÖÓÓëÍ¬²½Ê±ÖÓ(ÈçÒôÆµÊ±ÖÓ)µÄ²îÖµ£¬Ð£ÕýdelayÖµ£¬Ê¹ÊÓÆµÊ±ÖÓ×·¸Ï»òµÈ´ýÍ¬²½Ê±ÖÓ
-// ÊäÈë²ÎÊýdelayÊÇÉÏÒ»Ö¡²¥·ÅÊ±³¤£¬¼´ÉÏÒ»Ö¡²¥·ÅºóÓ¦ÑÓÊ±¶à³¤Ê±¼äºóÔÙ²¥·Åµ±Ç°Ö¡£¬Í¨¹ýµ÷½Ú´ËÖµÀ´µ÷½Úµ±Ç°Ö¡²¥·Å¿ìÂý
-// ·µ»ØÖµdelayÊÇ½«ÊäÈë²ÎÊýdelay¾­Ð£ÕýºóµÃµ½µÄÖµ
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½)ï¿½Ä²ï¿½Öµï¿½ï¿½Ð£ï¿½ï¿½delayÖµï¿½ï¿½Ê¹ï¿½ï¿½ÆµÊ±ï¿½ï¿½×·ï¿½Ï»ï¿½È´ï¿½Í¬ï¿½ï¿½Ê±ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½delayï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½Åºï¿½Ó¦ï¿½ï¿½Ê±ï¿½à³¤Ê±ï¿½ï¿½ï¿½ï¿½Ù²ï¿½ï¿½Åµï¿½Ç°Ö¡ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°Ö¡ï¿½ï¿½ï¿½Å¿ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½Öµdelayï¿½Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½delayï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Öµ
 static double compute_target_delay(double delay, VideoState *is)
 {
     double sync_threshold, diff = 0;
@@ -1542,24 +1542,24 @@ static double compute_target_delay(double delay, VideoState *is)
     if (get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER) {
         /* if video is slave, we try to correct big delays by
            duplicating or deleting a frame */
-		   // ÊÓÆµÊ±ÖÓÓëÍ¬²½Ê±ÖÓ(ÈçÒôÆµÊ±ÖÓ)µÄ²îÒì£¬Ê±ÖÓÖµÊÇÉÏÒ»Ö¡ptsÖµ(ÊµÎª£ºÉÏÒ»Ö¡pts + ÉÏÒ»Ö¡ÖÁ½ñÁ÷ÊÅµÄÊ±¼ä²î)
+		   // ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½)ï¿½Ä²ï¿½ï¿½ì£¬Ê±ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ò»Ö¡ptsÖµ(ÊµÎªï¿½ï¿½ï¿½ï¿½Ò»Ö¡pts + ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ê±ï¿½ï¿½ï¿½)
         diff = get_clock(&is->vidclk) - get_master_clock(is);
-		// delayÊÇÉÏÒ»Ö¡²¥·ÅÊ±³¤£ºµ±Ç°Ö¡(´ý²¥·ÅµÄÖ¡)²¥·ÅÊ±¼äÓëÉÏÒ»Ö¡²¥·ÅÊ±¼ä²îÀíÂÛÖµ
-		// diffÊÇÊÓÆµÊ±ÖÓÓëÍ¬²½Ê±ÖÓµÄ²îÖµ
+		// delayï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ö¡(ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½Ö¡)ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+		// diffï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½ÓµÄ²ï¿½Öµ
         /* skip or repeat frame. We take into account the
            delay to compute the threshold. I still don't know
            if it is the best guess */
-		   // Èôdelay < AV_SYNC_THRESHOLD_MIN£¬ÔòÍ¬²½ÓòÖµÎªAV_SYNC_THRESHOLD_MIN
-		   // Èôdelay > AV_SYNC_THRESHOLD_MAX£¬ÔòÍ¬²½ÓòÖµÎªAV_SYNC_THRESHOLD_MAX
-		   // ÈôAV_SYNC_THRESHOLD_MIN < delay < AV_SYNC_THRESHOLD_MAX£¬ÔòÍ¬²½ÓòÖµÎªdelay
+		   // ï¿½ï¿½delay < AV_SYNC_THRESHOLD_MINï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ÖµÎªAV_SYNC_THRESHOLD_MIN
+		   // ï¿½ï¿½delay > AV_SYNC_THRESHOLD_MAXï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ÖµÎªAV_SYNC_THRESHOLD_MAX
+		   // ï¿½ï¿½AV_SYNC_THRESHOLD_MIN < delay < AV_SYNC_THRESHOLD_MAXï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ÖµÎªdelay
         sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
         if (!isnan(diff) && fabs(diff) < is->max_frame_duration) {
-            if (diff <= -sync_threshold)// ÊÓÆµÊ±ÖÓÂäºóÓÚÍ¬²½Ê±ÖÓ£¬ÇÒ³¬¹ýÍ¬²½ÓòÖµ
-                delay = FFMAX(0, delay + diff); // µ±Ç°Ö¡²¥·ÅÊ±¿ÌÂäºóÓÚÍ¬²½Ê±ÖÓ(delay+diff<0)Ôòdelay=0(ÊÓÆµ×·¸Ï£¬Á¢¼´²¥·Å)£¬·ñÔòdelay=delay+diff
-            else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)// ÊÓÆµÊ±ÖÓ³¬Ç°ÓÚÍ¬²½Ê±ÖÓ£¬ÇÒ³¬¹ýÍ¬²½ÓòÖµ£¬µ«ÉÏÒ»Ö¡²¥·ÅÊ±³¤³¬³¤
-                delay = delay + diff;// ½ö½öÐ£ÕýÎªdelay=delay+diff£¬Ö÷ÒªÊÇAV_SYNC_FRAMEDUP_THRESHOLD²ÎÊýµÄ×÷ÓÃ£¬²»×÷Í¬²½²¹³¥
-            else if (diff >= sync_threshold) // ÊÓÆµÊ±ÖÓ³¬Ç°ÓÚÍ¬²½Ê±ÖÓ£¬ÇÒ³¬¹ýÍ¬²½ÓòÖµ
-                delay = 2 * delay;// ÊÓÆµ²¥·ÅÒª·ÅÂý½Å²½£¬delayÀ©´óÖÁ2±¶
+            if (diff <= -sync_threshold)// ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½Ó£ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½Öµ
+                delay = FFMAX(0, delay + diff); // ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½ï¿½(delay+diff<0)ï¿½ï¿½delay=0(ï¿½ï¿½Æµ×·ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½delay=delay+diff
+            else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)// ï¿½ï¿½ÆµÊ±ï¿½Ó³ï¿½Ç°ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½Ó£ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                delay = delay + diff;// ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½Îªdelay=delay+diffï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½AV_SYNC_FRAMEDUP_THRESHOLDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            else if (diff >= sync_threshold) // ï¿½ï¿½ÆµÊ±ï¿½Ó³ï¿½Ç°ï¿½ï¿½Í¬ï¿½ï¿½Ê±ï¿½Ó£ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½Öµ
+                delay = 2 * delay;// ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½delayï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½
         }
     }
 
@@ -1572,7 +1572,7 @@ static double compute_target_delay(double delay, VideoState *is)
 //
 static double vp_duration(VideoState *is, Frame *vp, Frame *nextvp) {
     if (vp->serial == nextvp->serial) {
-        double duration = nextvp->pts - vp->pts;//Á½Ö¡ÏÔÊ¾Ê±¼ä³ÖÐøÖ®²î
+        double duration = nextvp->pts - vp->pts;//ï¿½ï¿½Ö¡ï¿½ï¿½Ê¾Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½
         if (isnan(duration) || duration <= 0 || duration > is->max_frame_duration)
             return vp->duration;
         else
@@ -1592,87 +1592,87 @@ static void update_video_pts(VideoState *is, double pts, int64_t pos, int serial
 static void video_refresh(void *opaque, double *remaining_time)
 {
     VideoState *is = opaque;
-    double time;//µ±Ç°ÏµÍ³Æ½Ì¨µÄÊ±¼ä£¬µ¥Î»Ãë
+    double time;//ï¿½ï¿½Ç°ÏµÍ³Æ½Ì¨ï¿½ï¿½Ê±ï¿½ä£¬ï¿½ï¿½Î»ï¿½ï¿½
 
     Frame *sp, *sp2;
 
     if (!is->paused && get_master_sync_type(is) == AV_SYNC_EXTERNAL_CLOCK && is->realtime)
         check_external_clock_speed(is);
 
-	// ÒôÆµ²¨ÐÎÍ¼ÏÔÊ¾
+	// ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ê¾
     if (!display_disable && is->show_mode != SHOW_MODE_VIDEO && is->audio_st) {
-		//ÓÐÒôÆµÁ÷
+		//ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
         time = av_gettime_relative() / 1000000.0;
         if (is->force_refresh || is->last_vis_time + rdftspeed < time) {
-            video_display(is);//rdftspeed = 20ms£¬Á½´ÎÏÔÊ¾Êµ¼ÊÖµÐ¡ÓÚÕâ¸öÊ±¼ä²ÅÏÔÊ¾
-            is->last_vis_time = time;//ÖØÉèÉÏÒ»´ÎÏÔÊ¾µÄÊ±¼ä
+            video_display(is);//rdftspeed = 20msï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Êµï¿½ï¿½ÖµÐ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
+            is->last_vis_time = time;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê±ï¿½ï¿½
         }
-        *remaining_time = FFMIN(*remaining_time, is->last_vis_time + rdftspeed - time);//²¥·Å¿ìÁË£¬ÏÂÒ»¸öÏÔÊ¾Ñ­»·»áÐÝÃßÕâ¸öÊµ¼ÊÑÓ³ÙÏÔÊ¾
+        *remaining_time = FFMIN(*remaining_time, is->last_vis_time + rdftspeed - time);//ï¿½ï¿½ï¿½Å¿ï¿½ï¿½Ë£ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½Ê¾
     }
 
-	// ÊÓÆµ²¥·Å
+	// ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½
     if (is->video_st) {
 retry:
-        if (frame_queue_nb_remaining(&is->pictq) == 0) {// ËùÓÐÖ¡ÒÑÏÔÊ¾
+        if (frame_queue_nb_remaining(&is->pictq) == 0) {// ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½Ê¾
             // nothing to do, no picture to display in the queue
-        } else {                                                             // ÓÐÎ´ÏÔÊ¾Ö¡
+        } else {                                                             // ï¿½ï¿½Î´ï¿½ï¿½Ê¾Ö¡
             double last_duration, duration, delay;
             Frame *vp, *lastvp;
 
             /* dequeue the picture */
-            lastvp = frame_queue_peek_last(&is->pictq); // ÉÏÒ»Ö¡£ºÉÏ´ÎÒÑÏÔÊ¾µÄÖ¡
-            vp = frame_queue_peek(&is->pictq);  // µ±Ç°Ö¡£ºµ±Ç°´ýÏÔÊ¾µÄÖ¡
+            lastvp = frame_queue_peek_last(&is->pictq); // ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ö¡
+            vp = frame_queue_peek(&is->pictq);  // ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ö¡
 
-            if (vp->serial != is->videoq.serial) {//ÔÚ**read_threadÓÉpacket_queue_put_privateÀÛ¼Ó
-                frame_queue_next(&is->pictq);//»¹Ã»Ã÷°×Ö´ÐÐ´Ë²½ÖèµÄÔ­Òò
+            if (vp->serial != is->videoq.serial) {//ï¿½ï¿½**read_threadï¿½ï¿½packet_queue_put_privateï¿½Û¼ï¿½
+                frame_queue_next(&is->pictq);//ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð´Ë²ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½
                 goto retry;
             }
-			// lastvpºÍvp²»ÊÇÍ¬Ò»²¥·ÅÐòÁÐ(Ò»¸öseek»á¿ªÊ¼Ò»¸öÐÂ²¥·ÅÐòÁÐ)£¬½«frame_timer¸üÐÂÎªµ±Ç°Ê±¼ä
-            if (lastvp->serial != vp->serial)//µ±Ç°Ö¡ºÍÉÏÒ»Ö¡serial²»Ò»Ñù
-                is->frame_timer = av_gettime_relative() / 1000000.0;//ÉèÖÃ»ù×¼Ê±¼äÎªµ±Ç°Ê±¼ä
+			// lastvpï¿½ï¿½vpï¿½ï¿½ï¿½ï¿½Í¬Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Ò»ï¿½ï¿½seekï¿½á¿ªÊ¼Ò»ï¿½ï¿½ï¿½Â²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½frame_timerï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Ê±ï¿½ï¿½
+            if (lastvp->serial != vp->serial)//ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ò»Ö¡serialï¿½ï¿½Ò»ï¿½ï¿½
+                is->frame_timer = av_gettime_relative() / 1000000.0;//ï¿½ï¿½ï¿½Ã»ï¿½×¼Ê±ï¿½ï¿½Îªï¿½ï¿½Ç°Ê±ï¿½ï¿½
 
-            if (is->paused)// ÔÝÍ£´¦Àí£º²»Í£²¥·ÅÉÏÒ»Ö¡Í¼Ïñ
+            if (is->paused)// ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡Í¼ï¿½ï¿½
                 goto display;
 
             /* compute nominal last_duration */
-			 // ÉÏÒ»Ö¡²¥·ÅÊ±³¤£ºvp->pts - lastvp->pts
-            last_duration = vp_duration(is, lastvp, vp);//¸ù¾Ýµ±Ç°Ö¡ºÍÉÏÒ»Ö¡µÄpts¼ÆËã³öÀ´ÉÏÒ»Ö¡ÏÔÊ¾µÄ³ÖÐøÊ±¼ä
-			// ¸ù¾ÝÊÓÆµÊ±ÖÓºÍÍ¬²½Ê±ÖÓµÄ²îÖµ£¬¼ÆËãdelayÖµ
-            delay = compute_target_delay(last_duration, is);/** ¼ÆËãµ±Ç°Ö¡ÐèÒªÏÔÊ¾µÄÊ±¼ä **/
+			 // ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½vp->pts - lastvp->pts
+            last_duration = vp_duration(is, lastvp, vp);//ï¿½ï¿½ï¿½Ýµï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ptsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½Ê¾ï¿½Ä³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½Óºï¿½Í¬ï¿½ï¿½Ê±ï¿½ÓµÄ²ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½delayÖµ
+            delay = compute_target_delay(last_duration, is);/** ï¿½ï¿½ï¿½ãµ±Ç°Ö¡ï¿½ï¿½Òªï¿½ï¿½Ê¾ï¿½ï¿½Ê±ï¿½ï¿½ **/
 
-            time= av_gettime_relative()/1000000.0;  /** »ñÈ¡µ±Ç°µÄÊ±¼ä **/
-			// µ±Ç°Ö¡²¥·ÅÊ±¿Ì(is->frame_timer+delay)´óÓÚµ±Ç°Ê±¿Ì(time)£¬±íÊ¾²¥·ÅÊ±¿ÌÎ´µ½
+            time= av_gettime_relative()/1000000.0;  /** ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½Ê±ï¿½ï¿½ **/
+			// ï¿½ï¿½Ç°Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½(is->frame_timer+delay)ï¿½ï¿½ï¿½Úµï¿½Ç°Ê±ï¿½ï¿½(time)ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Î´ï¿½ï¿½
             if (time < is->frame_timer + delay) {
-				// ²¥·ÅÊ±¿ÌÎ´µ½£¬Ôò¸üÐÂË¢ÐÂÊ±¼äremaining_timeÎªµ±Ç°Ê±¿Ìµ½ÏÂÒ»²¥·ÅÊ±¿ÌµÄÊ±¼ä²î
+				// ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¢ï¿½ï¿½Ê±ï¿½ï¿½remaining_timeÎªï¿½ï¿½Ç°Ê±ï¿½Ìµï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ìµï¿½Ê±ï¿½ï¿½ï¿½
                 *remaining_time = FFMIN(is->frame_timer + delay - time, *remaining_time);
-				// ²¥·ÅÊ±¿ÌÎ´µ½£¬Ôò²»¸üÐÂrindex£¬°ÑÉÏÒ»Ö¡ÔÙlastvpÔÙ²¥·ÅÒ»±é
+				// ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ò²»¸ï¿½ï¿½ï¿½rindexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½lastvpï¿½Ù²ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
                 goto display;
             }
-			// ¸üÐÂframe_timerÖµ
-            is->frame_timer += delay;/** ¸üÐÂÊÓÆµµÄ»ù×¼Ê±¼ä **/
-			// Ð£Õýframe_timerÖµ£ºÈôframe_timerÂäºóÓÚµ±Ç°ÏµÍ³Ê±¼äÌ«¾Ã(³¬¹ý×î´óÍ¬²½ÓòÖµ)£¬Ôò¸üÐÂÎªµ±Ç°ÏµÍ³Ê±¼ä
+			// ï¿½ï¿½ï¿½ï¿½frame_timerÖµ
+            is->frame_timer += delay;/** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä»ï¿½×¼Ê±ï¿½ï¿½ **/
+			// Ð£ï¿½ï¿½frame_timerÖµï¿½ï¿½ï¿½ï¿½frame_timerï¿½ï¿½ï¿½ï¿½Úµï¿½Ç°ÏµÍ³Ê±ï¿½ï¿½Ì«ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½Öµ)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°ÏµÍ³Ê±ï¿½ï¿½
             if (delay > 0 && time - is->frame_timer > AV_SYNC_THRESHOLD_MAX)
-                is->frame_timer = time;/** Èç¹ûµ±Ç°Ê±¼äÓë»ù×¼Ê±¼äÆ«²î´óÓÚ AV_SYNC_THRESHOLD_MAX Ôò°ÑÊÓÆµ»ù×¼Ê±¼äÉèÖÃÎªµ±Ç°Ê±¼ä **/
+                is->frame_timer = time;/** ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ê±ï¿½ï¿½ï¿½ï¿½ï¿½×¼Ê±ï¿½ï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ AV_SYNC_THRESHOLD_MAX ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½×¼Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç°Ê±ï¿½ï¿½ **/
 
             SDL_LockMutex(is->pictq.mutex);
 			av_log(NULL, AV_LOG_DEBUG, "video_refresh 1: pts:%s, last_duration pts:%s\n", av_ts2str(vp->pts), av_ts2str(lastvp->pts));
-            if (!isnan(vp->pts))  /** ¸üÐÂÊÓÆµÊ±¼äÖá **/
-                update_video_pts(is, vp->pts, vp->pos, vp->serial);// ¸üÐÂÊÓÆµÊ±ÖÓ£ºÊ±¼ä´Á¡¢Ê±ÖÓÊ±¼ä
+            if (!isnan(vp->pts))  /** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½ **/
+                update_video_pts(is, vp->pts, vp->pos, vp->serial);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½Ó£ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê±ï¿½ï¿½
             SDL_UnlockMutex(is->pictq.mutex);
 
-			/** Èç¹û¶ÓÁÐÖÐÓÐÎ´ÏÔÊ¾µÄÖ¡£¬Èç¹û¿ªÆôÁË¶ªÖ¡´¦Àí»òÕß²»ÊÇÒÔÊÓÆµÎªÖ÷Ê±¼äÖá£¬Ôò½øÐÐ¶ªÖ¡´¦Àí **/
-			// ÊÇ·ñÒª¶ªÆúÎ´ÄÜ¼°Ê±²¥·ÅµÄÊÓÆµÖ¡
-            if (frame_queue_nb_remaining(&is->pictq) > 1) {// ¶ÓÁÐÖÐÎ´ÏÔÊ¾Ö¡Êý>1(Ö»ÓÐÒ»Ö¡Ôò²»¿¼ÂÇ¶ªÖ¡)
-                Frame *nextvp = frame_queue_peek_next(&is->pictq); // ÏÂÒ»Ö¡£ºÏÂÒ»´ýÏÔÊ¾µÄÖ¡
-                duration = vp_duration(is, vp, nextvp);// µ±Ç°Ö¡vp²¥·ÅÊ±³¤ = nextvp->pts - vp->pts
-				 // 1. ·Ç²½½øÄ£Ê½£»2. ¶ªÖ¡²ßÂÔÉúÐ§£»3. µ±Ç°Ö¡vpÎ´ÄÜ¼°Ê±²¥·Å£¬¼´ÏÂÒ»Ö¡²¥·ÅÊ±¿Ì(is->frame_timer+duration)Ð¡ÓÚµ±Ç°ÏµÍ³Ê±¿Ì(time)
+			/** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Ê¾ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÎªï¿½ï¿½Ê±ï¿½ï¿½ï¿½á£¬ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ **/
+			// ï¿½Ç·ï¿½Òªï¿½ï¿½ï¿½ï¿½Î´ï¿½Ü¼ï¿½Ê±ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½ÆµÖ¡
+            if (frame_queue_nb_remaining(&is->pictq) > 1) {// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Ê¾Ö¡ï¿½ï¿½>1(Ö»ï¿½ï¿½Ò»Ö¡ï¿½ò²»¿ï¿½ï¿½Ç¶ï¿½Ö¡)
+                Frame *nextvp = frame_queue_peek_next(&is->pictq); // ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ö¡
+                duration = vp_duration(is, vp, nextvp);// ï¿½ï¿½Ç°Ö¡vpï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ = nextvp->pts - vp->pts
+				 // 1. ï¿½Ç²ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½2. ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½3. ï¿½ï¿½Ç°Ö¡vpÎ´ï¿½Ü¼ï¿½Ê±ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½(is->frame_timer+duration)Ð¡ï¿½Úµï¿½Ç°ÏµÍ³Ê±ï¿½ï¿½(time)
                 if(!is->step && (framedrop>0 || (framedrop && get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) && time > is->frame_timer + duration){
-                    is->frame_drops_late++;// framedrop¶ªÖ¡´¦ÀíÓÐÁ½´¦£º1) packetÈë¶ÓÁÐÇ°£¬2) frameÎ´¼°Ê±ÏÔÊ¾(´Ë´¦)
-                    frame_queue_next(&is->pictq); // É¾³ýÉÏÒ»Ö¡ÒÑÏÔÊ¾Ö¡£¬¼´É¾³ýlastvp£¬¶ÁÖ¸Õë¼Ó1(´Ólastvp¸üÐÂµ½vp)
+                    is->frame_drops_late++;// framedropï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1) packetï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½2) frameÎ´ï¿½ï¿½Ê±ï¿½ï¿½Ê¾(ï¿½Ë´ï¿½)
+                    frame_queue_next(&is->pictq); // É¾ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½ï¿½Ê¾Ö¡ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½lastvpï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½1(ï¿½ï¿½lastvpï¿½ï¿½ï¿½Âµï¿½vp)
                     goto retry;
                 }
             }
-			// ×ÖÄ»²¥·Å
+			// ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½
             if (is->subtitle_st) {
                     while (frame_queue_nb_remaining(&is->subpq) > 0) {
                         sp = frame_queue_peek(&is->subpq);
@@ -1706,7 +1706,7 @@ retry:
                         }
                     }
             }
-			// É¾³ýµ±Ç°¶ÁÖ¸ÕëÔªËØ£¬¶ÁÖ¸Õë+1¡£ÈôÎ´¶ªÖ¡£¬¶ÁÖ¸Õë´Ólastvp¸üÐÂµ½vp£»ÈôÓÐ¶ªÖ¡£¬¶ÁÖ¸Õë´Óvp¸üÐÂµ½nextvp
+			// É¾ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¸ï¿½ï¿½Ôªï¿½Ø£ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½+1ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½lastvpï¿½ï¿½ï¿½Âµï¿½vpï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½vpï¿½ï¿½ï¿½Âµï¿½nextvp
             frame_queue_next(&is->pictq);
             is->force_refresh = 1;
 
@@ -1716,10 +1716,10 @@ retry:
 display:
         /* display picture */
         if (!display_disable && is->force_refresh && is->show_mode == SHOW_MODE_VIDEO && is->pictq.rindex_shown)
-            video_display(is);// È¡³öµ±Ç°Ö¡vp(ÈôÓÐ¶ªÖ¡ÊÇnextvp)½øÐÐ²¥·Å
+            video_display(is);// È¡ï¿½ï¿½ï¿½ï¿½Ç°Ö¡vp(ï¿½ï¿½ï¿½Ð¶ï¿½Ö¡ï¿½ï¿½nextvp)ï¿½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½
     }
     is->force_refresh = 0;
-    if (show_status) { // ¸üÐÂÏÔÊ¾²¥·Å×´Ì¬
+    if (show_status) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×´Ì¬
         static int64_t last_time;
         int64_t cur_time;
         int aqsize, vqsize, sqsize;
@@ -1800,7 +1800,7 @@ static int get_video_frame(VideoState *is, AVFrame *frame)
 
     if (got_picture) {
 		av_log(NULL, AV_LOG_DEBUG, "ffplay  get_video_frame 001: dpts:%s\n", av_ts2str(frame->pts));
-        double dpts = NAN;//ÏÔÊ¾Ê±¼ä
+        double dpts = NAN;//ï¿½ï¿½Ê¾Ê±ï¿½ï¿½
 
         if (frame->pts != AV_NOPTS_VALUE)
             dpts = av_q2d(is->video_st->time_base) * frame->pts;
@@ -1815,7 +1815,7 @@ static int get_video_frame(VideoState *is, AVFrame *frame)
                     is->viddec.pkt_serial == is->vidclk.serial &&
                     is->videoq.nb_packets) {
                     is->frame_drops_early++;
-                    av_frame_unref(frame);//ÕâÖÖÇé¿ö¶ªÆúµ±Ç°Ö¡
+                    av_frame_unref(frame);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ö¡
                     got_picture = 0;
                 }
             }
@@ -2072,7 +2072,7 @@ static int audio_thread(void *arg)
         if ((got_frame = decoder_decode_frame(&is->auddec, frame, NULL)) < 0)
             goto the_end;
 
-        if (got_frame) {//=1ËµÃ÷»ñÈ¡µ½ÁË½âÂëºóµÄÊý¾Ý
+        if (got_frame) {//=1Ëµï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ë½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 tb = (AVRational){1, frame->sample_rate};
 
 #if CONFIG_AVFILTER
@@ -2237,7 +2237,7 @@ static int video_thread(void *arg)
 #endif
             duration = (frame_rate.num && frame_rate.den ? av_q2d((AVRational){frame_rate.den, frame_rate.num}) : 0);
 			av_log(NULL, AV_LOG_DEBUG, "ffplay  video_thread 001: frame->pts:%s, frame->pts:%s\n", av_ts2str(frame->pts), av_ts2str(frame->pts));
-            pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);//¼ÆËãÏÔÊ¾Ê±¼ä´Á   tb£ºÊäÈëÊÓÆµÁ÷ÖÐµÄÊ±¼ä»ù
+            pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Ê±ï¿½ï¿½ï¿½   tbï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½Ðµï¿½Ê±ï¿½ï¿½ï¿½
 			av_log(NULL, AV_LOG_DEBUG, "ffplay  video_thread 002: pts:%s\n", av_ts2str(pts));
 
             ret = queue_picture(is, frame, pts, duration, frame->pkt_pos, is->viddec.pkt_serial);
@@ -2313,11 +2313,11 @@ static void update_sample_display(VideoState *is, short *samples, int samples_si
 }
 
 /* return the wanted number of samples to get better sync if sync_type is video
- * or external master clock */ //Èç¹ûÍ¬²½ÀàÐÍÎªÊÓÆµ»òÍâ²¿Ö÷Ê±ÖÓ£¬Ôò·µ»ØËùÐèµÄ²ÉÑùÊýÀ´¸üºÃµÄÍ¬²½¡£
+ * or external master clock */ //ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Æµï¿½ï¿½ï¿½â²¿ï¿½ï¿½Ê±ï¿½Ó£ï¿½ï¿½ò·µ»ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½Í¬ï¿½ï¿½ï¿½ï¿½
 static int synchronize_audio(VideoState *is, int nb_samples)
 {
     int wanted_nb_samples = nb_samples;
-	//Èç¹û²»ÊÇÒÔÒôÆµ×÷ÎªÖ÷Ê±ÖÓ£¬³¢ÊÔ¶ªÖ¡ºÍ²åÖ¡È¥ÐÞÕýÊ±ÖÓ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½Îªï¿½ï¿½Ê±ï¿½Ó£ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½Ö¡ï¿½Í²ï¿½Ö¡È¥ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
     /* if not master, then we try to remove or add samples to correct the clock */
     if (get_master_sync_type(is) != AV_SYNC_AUDIO_MASTER) {
         double diff, avg_diff;
@@ -2457,7 +2457,7 @@ static int audio_decode_frame(VideoState *is)
 
     audio_clock0 = is->audio_clock;
     /* update the audio clock with the pts */
-    if (!isnan(af->pts))//                                                    ¼ÆËã³öÀ´ÊÇ²¥·ÅÊ±³¤£¿
+    if (!isnan(af->pts))//                                                    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
         is->audio_clock = af->pts + (double) af->frame->nb_samples / af->frame->sample_rate;
     else
         is->audio_clock = NAN;
@@ -2512,7 +2512,7 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
     }
     is->audio_write_buf_size = is->audio_buf_size - is->audio_buf_index;
     /* Let's assume the audio driver that is used by SDL has two periods. */
-    if (!isnan(is->audio_clock)) { //isnan(NAN)         = 1,ÒôÆµµÄpts - Ó²¼þ»º³åÇøÀïÊ£ÏÂµÄÊ±¼äÉèÖÃµ½ÁËÒôÆµµÄÊ±ÖÓÀï
+    if (!isnan(is->audio_clock)) { //isnan(NAN)         = 1,ï¿½ï¿½Æµï¿½ï¿½pts - Ó²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê£ï¿½Âµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
         set_clock_at(&is->audclk, is->audio_clock - (double)(2 * is->audio_hw_buf_size + is->audio_write_buf_size) / is->audio_tgt.bytes_per_sec, is->audio_clock_serial, audio_callback_time / 1000000.0);
         sync_clock_to_slave(&is->extclk, &is->audclk);
     }
@@ -2719,7 +2719,7 @@ static int stream_component_open(VideoState *is, int stream_index)
         is->video_st = ic->streams[stream_index];
 
         decoder_init(&is->viddec, avctx, &is->videoq, is->continue_read_thread);
-        if ((ret = decoder_start(&is->viddec, video_thread, "video_decoder", is)) < 0)//¿ªÆôÊÓÆµ½âÂëÏß³Ì
+        if ((ret = decoder_start(&is->viddec, video_thread, "video_decoder", is)) < 0)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
             goto out;
         is->queue_attachments_req = 1;
         break;
@@ -2806,7 +2806,7 @@ static int read_thread(void *arg)
         ret = AVERROR(ENOMEM);
         goto fail;
     }
-    ic->interrupt_callback.callback = decode_interrupt_cb;//½âÂëÖÐ¶Ï»Øµ÷
+    ic->interrupt_callback.callback = decode_interrupt_cb;//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»Øµï¿½
     ic->interrupt_callback.opaque = is;
     if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
         av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
@@ -2971,7 +2971,7 @@ static int read_thread(void *arg)
             continue;
         }
 #endif
-		//¿ì½ø¿ìÍË´úÂë
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½ï¿½ï¿½
         if (is->seek_req) {
             int64_t seek_target = is->seek_pos;
             int64_t seek_min    = is->seek_rel > 0 ? seek_target - is->seek_rel + 2: INT64_MIN;
@@ -3041,7 +3041,7 @@ static int read_thread(void *arg)
                 goto fail;
             }
         }
-        ret = av_read_frame(ic, pkt);//¶ÁÈ¡ÒôÊÓÆµÖ¡
+        ret = av_read_frame(ic, pkt);//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ÆµÖ¡
 		av_log(NULL, AV_LOG_DEBUG, "ffplay  av_read_frame 1: pts:%s, dts:%s\n", av_ts2str(pkt->pts), av_ts2str(pkt->dts));
         if (ret < 0) {
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
@@ -3063,7 +3063,7 @@ static int read_thread(void *arg)
             is->eof = 0;
         }
         /* check if packet is in play range specified by user, then queue, otherwise discard */
-		//stream_start_timeÉèÖÃÎª£ºµÚÒ»Ö¡Ê±¼ä´Á
+		//stream_start_timeï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ò»Ö¡Ê±ï¿½ï¿½ï¿½
         stream_start_time = ic->streams[pkt->stream_index]->start_time;
         pkt_ts = pkt->pts == AV_NOPTS_VALUE ? pkt->dts : pkt->pts;
         pkt_in_play_range = duration == AV_NOPTS_VALUE ||
@@ -3130,7 +3130,7 @@ static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
         goto fail;
     }
-    //³õÊ¼»¯Ê±ÖÓ
+    //ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½
     init_clock(&is->vidclk, &is->videoq.serial);
     init_clock(&is->audclk, &is->audioq.serial);
     init_clock(&is->extclk, &is->extclk.serial);
@@ -3251,13 +3251,13 @@ static void toggle_audio_display(VideoState *is)
     }
 }
 
-static void refresh_loop_wait_event(VideoState *is, SDL_Event *event) {//ÅÜÔÚÖ÷Ïß³ÌloopÀïÃæ£¬Ö÷Ïß³ÌloopÈ¡¶ÓÁÐÖÐÒôÊÓÆµËÍÏÔÊ¾ºÍ²¥·Å
+static void refresh_loop_wait_event(VideoState *is, SDL_Event *event) {//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½loopï¿½ï¿½ï¿½æ£¬ï¿½ï¿½ï¿½ß³ï¿½loopÈ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Ê¾ï¿½Í²ï¿½ï¿½ï¿½
     double remaining_time = 0.0;
     SDL_PumpEvents();
-	//SDL_PeepEvents ·µ»ØÖµÐ¡ÓÚ0ËµÃ÷³ö´íÁË£¬ ´óÓÚ0ËµÃ÷ÓÐÊÂ¼þÐèÒª´¦Àí£¬ÕâÁ½ÖÖÇé¿öÖÕÖ¹Ñ­»·£¬=0Ê±Ë¢ÐÂÊÓÆµ
+	//SDL_PeepEvents ï¿½ï¿½ï¿½ï¿½ÖµÐ¡ï¿½ï¿½0Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ ï¿½ï¿½ï¿½ï¿½0Ëµï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹Ñ­ï¿½ï¿½ï¿½ï¿½=0Ê±Ë¢ï¿½ï¿½ï¿½ï¿½Æµ
     while (!SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {//
         if (!cursor_hidden && av_gettime_relative() - cursor_last_shown > CURSOR_HIDE_DELAY) {
-            SDL_ShowCursor(0);//ÏÔÊ¾¹â±ê
+            SDL_ShowCursor(0);//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½
             cursor_hidden = 1;
         }
         if (remaining_time > 0.0)
@@ -3361,7 +3361,7 @@ static void event_loop(VideoState *cur_stream)
                     toggle_audio_display(cur_stream);
                 }
 #else
-                toggle_audio_display(cur_stream);//´¥·¢
+                toggle_audio_display(cur_stream);//ï¿½ï¿½ï¿½ï¿½
 #endif
                 break;
             case SDLK_PAGEUP:
@@ -3389,7 +3389,7 @@ static void event_loop(VideoState *cur_stream)
                 goto do_seek;
             case SDLK_DOWN:
                 incr = -60.0;
-            do_seek://¿ì½ø¿ìÍË
+            do_seek://ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     if (seek_by_bytes) {
                         pos = -1;
                         if (pos < 0 && cur_stream->video_stream >= 0)
