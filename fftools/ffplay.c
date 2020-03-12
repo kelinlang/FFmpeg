@@ -122,7 +122,7 @@ typedef struct PacketQueue {
     int size; //整个队列占用的内存
     int64_t duration;//队列中数据播放时长之和
     int abort_request;
-    int serial;//初始化为0，加入刷新包加1，刷新包序号设置为1
+    int serial;//初始化为0，加入刷新包加1，刷新包序号设置为1,后续全部为1
     SDL_mutex *mutex;
     SDL_cond *cond;
 } PacketQueue;
@@ -155,7 +155,7 @@ typedef struct Clock {
 typedef struct Frame {
     AVFrame *frame;
     AVSubtitle sub;
-    int serial;
+    int serial;//播放序列，视频入队列时设置，seek 和切换流会开始新的播放序列
     double pts;           /* presentation timestamp for the frame */
     double duration;      /* estimated duration of the frame */
     int64_t pos;          /* byte position of the frame in the input file */
@@ -278,7 +278,7 @@ typedef struct VideoState {
     AVStream *subtitle_st;
     PacketQueue subtitleq;
 
-    double frame_timer;
+    double frame_timer;//上一帧视频的显示时刻
     double frame_last_returned_time;
     double frame_last_filter_delay;
     int video_stream;
@@ -587,20 +587,40 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
     d->start_pts = AV_NOPTS_VALUE;
     d->pkt_serial = -1;//初始化为-1
 }
+/*
+本函数实现如下功能：
+[1]. 从视频packet队列中取一个packet
+[2]. 将取得的packet发送给解码器
+[3]. 从解码器接收解码后的frame，此frame作为函数的输出参数供上级函数处理
 
+注意如下几点：
+[1]. 含B帧的视频文件，其视频帧存储顺序与显示顺序不同
+[2]. 解码器的输入是packet队列，视频帧解码顺序与存储顺序相同，是按dts递增的顺序。dts是解码时间戳，因此存储顺序解码顺序都是dts递增的顺序。avcodec_send_packet()就是将视频文件中的packet序列依次发送给解码器。发送packet的顺序如IPBBPBB。
+[3]. 解码器的输出是frame队列，frame输出顺序是按pts递增的顺序。pts是解码时间戳。pts与dts不一致的问题由解码器进行了处理，用户程序不必关心。从解码器接收frame的顺序如IBBPBBP。
+[4]. 解码器中会缓存一定数量的帧，一个新的解码动作启动后，向解码器送入好几个packet解码器才会输出第一个packet，这比较容易理解，因为解码时帧之间有信赖关系，例如IPB三个帧被送入解码器后，B帧解码需要依赖I帧和P帧，所在在B帧输出前，I帧和P帧必须存在于解码器中而不能删除。理解了这一点，后面视频frame队列中对视频帧的显示和删除机制才容易理解。
+[5]. 解码器中缓存的帧可以通过冲洗(flush)解码器取出。冲洗(flush)解码器的方法就是调用avcodec_send_packet(..., NULL)，然后多次调用avcodec_receive_frame()将缓存帧取尽。缓存帧取完后，avcodec_receive_frame()返回AVERROR_EOF。ffplay中，是通过向解码器发送flush_pkt(实际为NULL)，每次seek操作都会向解码器发送flush_pkt。
+
+如何确定解码器的输出frame与输入packet的对应关系呢？可以对比frame->pkt_pos和pkt.pos的值，这两个值表示packet在视频文件中的偏移地址，如果这两个变量值相等，表示此frame来自此packet。调试跟踪这两个变量值，即能发现解码器输入帧与输出帧的关系。为简便，就不贴图了。
+*/
+
+// 从packet_queue中取一个packet，解码生成frame
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
     int ret = AVERROR(EAGAIN);
 
     for (;;) {
         AVPacket pkt;
-
+        // 本函数被各解码线程(音频、视频、字幕)首次调用时，d->pkt_serial等于-1，d->queue->serial等于1
         if (d->queue->serial == d->pkt_serial) {
             do {
                 if (d->queue->abort_request)
                     return -1;
-
+                // 3. 从解码器接收frame
                 switch (d->avctx->codec_type) {
                     case AVMEDIA_TYPE_VIDEO:
+                        // 3.1 一个视频packet含一个视频frame
+                        //     解码器缓存一定数量的packet后，才有解码后的frame输出
+                        //     frame输出顺序是按pts的顺序，如IBBPBBP
+                        //     frame->pkt_pos变量是此frame对应的packet在视频文件中的偏移地址，值同pkt.pos
                         ret = avcodec_receive_frame(d->avctx, frame);//获取解码后的数据，解码时间戳和显示时间戳
                         if (ret >= 0) {
 							av_log(NULL, AV_LOG_DEBUG, "  ffplay decoder_decode_frame 001: pts:%s, dts:%s,pkt_pts:%s, pkt_dts:%s\n", av_ts2str(frame->pts), av_ts2str(frame->pts),
@@ -614,6 +634,9 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                         }
                         break;
                     case AVMEDIA_TYPE_AUDIO:
+                        // 3.2 一个音频packet含多个音频frame，每次avcodec_receive_frame()返回一个frame，此函数返回。
+                       // 下次进来此函数，继续获取一个frame，直到avcodec_receive_frame()返回AVERROR(EAGAIN)，
+                       // 表示解码器需要填入新的音频packet
                         ret = avcodec_receive_frame(d->avctx, frame);
                         if (ret >= 0) {
                             AVRational tb = (AVRational){1, frame->sample_rate};//时间基
@@ -633,25 +656,26 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                     avcodec_flush_buffers(d->avctx);
                     return 0;
                 }
-                if (ret >= 0)
+                if (ret >= 0)// 成功解码得到一个视频帧或一个音频帧，则返回
                     return 1;
             } while (ret != AVERROR(EAGAIN));
         }
 
         do {
-            if (d->queue->nb_packets == 0)
+            if (d->queue->nb_packets == 0)// packet_queue为空则等待
                 SDL_CondSignal(d->empty_queue_cond);
-            if (d->packet_pending) {
+            if (d->packet_pending) {// 有未处理的packet则先处理
                 av_packet_move_ref(&pkt, &d->pkt);
                 d->packet_pending = 0;
             } else {
+                // 1. 取出一个packet。使用pkt对应的serial赋值给d->pkt_serial
                 if (packet_queue_get(d->queue, &pkt, 1, &d->pkt_serial) < 0)
                     return -1;
             }
         } while (d->queue->serial != d->pkt_serial);
-
+        // packet_queue中第一个总是flush_pkt。每次seek操作会插入flush_pkt，更新serial，开启新的播放序列
         if (pkt.data == flush_pkt.data) {
-            avcodec_flush_buffers(d->avctx);
+            avcodec_flush_buffers(d->avctx);// 复位解码器内部状态/刷新内部缓冲区。当seek操作或切换流时应调用此函数。
             d->finished = 0;
             d->next_pts = d->start_pts;
             d->next_pts_tb = d->start_pts_tb;
@@ -671,6 +695,9 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
             } else {
 				av_log(NULL, AV_LOG_DEBUG, "  ffplay avcodec_send_packet 001: packetType: %s,index:%s,pts:%s, dts:%s\n",
 					pkt.stream_index ? "audio":"video", av_ts2str(pkt.stream_index), av_ts2str(pkt.pts), av_ts2str(pkt.dts));
+                // 2. 将packet发送给解码器
+               //    发送packet的顺序是按dts递增的顺序，如IPBBPBB
+               //    pkt.pos变量可以标识当前packet在视频文件中的地址偏移
                 if (avcodec_send_packet(d->avctx, &pkt) == AVERROR(EAGAIN)) {
                     av_log(d->avctx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
                     d->packet_pending = 1;
@@ -1530,7 +1557,27 @@ static void step_to_next_frame(VideoState *is)
         stream_toggle_pause(is);
     is->step = 1;
 }
+/*
+compute_target_delay()的输入参数delay是上一帧理想播放时长duration，返回值delay是经校正后的上一帧实际播放时长。为方便描述，下面我们将输入参数记作duration(对应函数的输入参数delay)，返回值记作delay(对应函数返回值delay)。
+本函数实现功能如下：
+[1] 计算视频时钟与音频时钟(主时钟)的偏差diff，实际就是视频上一帧pts减去音频上一帧pts。所谓上一帧，就是已经播放的最后一帧，上一帧的pts可以标识视频流/音频流的播放时刻(进度)。
+[2] 计算同步域值sync_threshold，同步域值的作用是：若视频时钟与音频时钟差异值小于同步域值，则认为音视频是同步的，不校正delay；若差异值大于同步域值，则认为音视频不同步，需要校正delay值。
+同步域值的计算方法如下：
+若duration < AV_SYNC_THRESHOLD_MIN，则同步域值为AV_SYNC_THRESHOLD_MIN
+若duration > AV_SYNC_THRESHOLD_MAX，则同步域值为AV_SYNC_THRESHOLD_MAX
+若AV_SYNC_THRESHOLD_MIN < duration < AV_SYNC_THRESHOLD_MAX，则同步域值为duration
+[3] delay校正策略如下：
 
+a) 视频时钟落后于同步时钟且落后值超过同步域值：
+a1) 若当前帧播放时刻落后于同步时钟(delay+diff<0)则delay=0(视频追赶，立即播放)；
+a2) 否则delay=duration+diff
+
+b) 视频时钟超前于同步时钟且超过同步域值：
+b1) 上一帧播放时长过长(超过最大值)，仅校正为delay=duration+diff；
+b2) 否则delay=duration×2，视频播放放慢脚步，等待音频
+
+c) 视频时钟与音频时钟的差异在同步域值内，表明音视频处于同步状态，不校正delay，则delay=duration
+*/
 // 根据视频时钟与同步时钟(如音频时钟)的差值，校正delay值，使视频时钟追赶或等待同步时钟
 // 输入参数delay是上一帧播放时长，即上一帧播放后应延时多长时间后再播放当前帧，通过调节此值来调节当前帧播放快慢
 // 返回值delay是将输入参数delay经校正后得到的值
@@ -1584,10 +1631,18 @@ static double vp_duration(VideoState *is, Frame *vp, Frame *nextvp) {
 
 static void update_video_pts(VideoState *is, double pts, int64_t pos, int serial) {
     /* update current video pts */
-    set_clock(&is->vidclk, pts, serial);
+    set_clock(&is->vidclk, pts, serial);//先把当前时间设置给视频时钟
     sync_clock_to_slave(&is->extclk, &is->vidclk);
 }
 
+/*
+视频同步到音频的基本方法是：如果视频超前音频，则不进行播放，以等待音频；如果视频落后音频，则丢弃当前帧直接播放下一帧，以追赶音频。
+
+步骤如下：
+[1] 根据上一帧lastvp的播放时长duration，校正等到delay值，duration是上一帧理想播放时长，delay是上一帧实际播放时长，根据delay值可以计算得到当前帧的播放时刻
+[2] 如果当前帧vp播放时刻未到，则继续显示上一帧lastvp，并将延时值remaining_time作为输出参数供上级调用函数处理
+[3] 如果当前帧vp播放时刻已到，则立即显示当前帧，并更新读指针
+*/
 /* called to display each frame */
 static void video_refresh(void *opaque, double *remaining_time)
 {
@@ -1622,9 +1677,9 @@ retry:
             /* dequeue the picture */
             lastvp = frame_queue_peek_last(&is->pictq); // 上一帧：上次已显示的帧
             vp = frame_queue_peek(&is->pictq);  // 当前帧：当前待显示的帧
-
-            if (vp->serial != is->videoq.serial) {//在**read_thread由packet_queue_put_private累加
-                frame_queue_next(&is->pictq);//还没明白执行此步骤的原因
+            
+            if (vp->serial != is->videoq.serial) {//在**read_thread由packet_queue_put_private设置，vp->serial为0，说明还没有显示过一帧有效的，
+                frame_queue_next(&is->pictq);//
                 goto retry;
             }
 			// lastvp和vp不是同一播放序列(一个seek会开始一个新播放序列)，将frame_timer更新为当前时间
@@ -1641,15 +1696,15 @@ retry:
             delay = compute_target_delay(last_duration, is);/** 计算当前帧需要显示的时间 **/
 
             time= av_gettime_relative()/1000000.0;  /** 获取当前的时间 **/
-			// 当前帧播放时刻(is->frame_timer+delay)大于当前时刻(time)，表示播放时刻未到
+			// 当前帧播放时刻(is->frame_timer+delay)大于当前时刻(time)，表示播放时刻未到，播放线程休眠remaining_time
             if (time < is->frame_timer + delay) {
 				// 播放时刻未到，则更新刷新时间remaining_time为当前时刻到下一播放时刻的时间差
                 *remaining_time = FFMIN(is->frame_timer + delay - time, *remaining_time);
 				// 播放时刻未到，则不更新rindex，把上一帧再lastvp再播放一遍
                 goto display;
             }
-			// 更新frame_timer值
-            is->frame_timer += delay;/** 更新视频的基准时间 **/
+			// 更新frame_timer值，
+            is->frame_timer += delay;//更新当前帧vp的播放时刻
 			// 校正frame_timer值：若frame_timer落后于当前系统时间太久(超过最大同步域值)，则更新为当前系统时间
             if (delay > 0 && time - is->frame_timer > AV_SYNC_THRESHOLD_MAX)
                 is->frame_timer = time;/** 如果当前时间与基准时间偏差大于 AV_SYNC_THRESHOLD_MAX 则把视频基准时间设置为当前时间 **/
@@ -1707,7 +1762,7 @@ retry:
                     }
             }
 			// 删除当前读指针元素，读指针+1。若未丢帧，读指针从lastvp更新到vp；若有丢帧，读指针从vp更新到nextvp
-            frame_queue_next(&is->pictq);
+            frame_queue_next(&is->pictq);//
             is->force_refresh = 1;
 
             if (is->step && !is->paused)
@@ -1716,7 +1771,8 @@ retry:
 display:
         /* display picture */
         if (!display_disable && is->force_refresh && is->show_mode == SHOW_MODE_VIDEO && is->pictq.rindex_shown)
-            video_display(is);// 取出当前帧vp(若有丢帧是nextvp)进行播放
+            video_display(is);// 取出当前帧vp(若有丢帧是nextvp)进行播放 
+        //可能取出的是lastvp、vp或者nextvp
     }
     is->force_refresh = 0;
     if (show_status) { // 更新显示播放状态
