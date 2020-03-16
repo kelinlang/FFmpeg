@@ -4393,7 +4393,7 @@ AVPacket *av_packet_clone(const AVPacket *src);
  * @param pkt packet to be freed. The pointer will be set to NULL.
  * @note passing NULL is a no-op.
  */
-void av_packet_free(AVPacket **pkt);
+void av_packet_free(AVPacket **pkt);// 一般就是如果用了av_packet_alloc后就要调用av_packet_free来释放
 
 /**
  * Initialize optional fields of a packet with default values.

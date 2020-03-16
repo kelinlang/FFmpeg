@@ -432,12 +432,12 @@ static int packet_queue_put_private(PacketQueue *q, AVPacket *pkt)
     if (q->abort_request)
        return -1;
 
-    pkt1 = av_malloc(sizeof(MyAVPacketList));//重新分配了内存
+    pkt1 = av_malloc(sizeof(MyAVPacketList));//重新分配了内存，队上
     if (!pkt1)
         return -1;
     pkt1->pkt = *pkt;//
     pkt1->next = NULL;
-    if (pkt == &flush_pkt)
+    if (pkt == &flush_pkt)//开始解码器时，新给一个刷新包
         q->serial++;//刷新包为serial为0，serial加1 ，只有这里修改了serial，后续一致为1
     pkt1->serial = q->serial;//设置序号
 
@@ -672,7 +672,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                 if (packet_queue_get(d->queue, &pkt, 1, &d->pkt_serial) < 0)
                     return -1;
             }
-        } while (d->queue->serial != d->pkt_serial);
+        } while (d->queue->serial != d->pkt_serial);//直到包序号一致，解码器的序号在packet_queue_get中设置，
         // packet_queue中第一个总是flush_pkt。每次seek操作会插入flush_pkt，更新serial，开启新的播放序列
         if (pkt.data == flush_pkt.data) {
             avcodec_flush_buffers(d->avctx);// 复位解码器内部状态/刷新内部缓冲区。当seek操作或切换流时应调用此函数。
@@ -1407,7 +1407,7 @@ static void video_display(VideoState *is)
 static double get_clock(Clock *c)
 {
     if (*c->queue_serial != c->serial)
-        return NAN;
+        return NAN;//第一次返回这个，后续快进快退
     if (c->paused) {
         return c->pts;
     } else {
@@ -1838,7 +1838,7 @@ static int queue_picture(VideoState *is, AVFrame *src_frame, double pts, double 
     vp->pts = pts;
     vp->duration = duration;
     vp->pos = pos;
-    vp->serial = serial;
+    vp->serial = serial;//设置成解码器的serial
 
     set_default_window_size(vp->width, vp->height, vp->sar);
 
@@ -3102,7 +3102,7 @@ static int read_thread(void *arg)
         if (ret < 0) {
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
                 if (is->video_stream >= 0)
-                    packet_queue_put_nullpacket(&is->videoq, is->video_stream);
+                    packet_queue_put_nullpacket(&is->videoq, is->video_stream);//结束的时候给队列null包，可以刷新解码器，输出解码器内部缓存的意见解码的frame
                 if (is->audio_stream >= 0)
                     packet_queue_put_nullpacket(&is->audioq, is->audio_stream);
                 if (is->subtitle_stream >= 0)
@@ -3187,9 +3187,9 @@ static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
         goto fail;
     }
     //初始化时钟
-    init_clock(&is->vidclk, &is->videoq.serial);
+    init_clock(&is->vidclk, &is->videoq.serial);//serial videoState中初始化为0
     init_clock(&is->audclk, &is->audioq.serial);
-    init_clock(&is->extclk, &is->extclk.serial);
+    init_clock(&is->extclk, &is->extclk.serial);//extclk分配内存的时候为0
     is->audio_clock_serial = -1;
     if (startup_volume < 0)
         av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
